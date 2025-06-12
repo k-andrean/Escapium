@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private GameObject clickEffectPrefab;
     [SerializeField] private float effectCoolDown = 0.3f;
+    private Animator animator;
     private Vector2 targetPosition;
     private bool isMoving = false;
     private float lastEffectTime = 0f;
@@ -16,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        animator = GetComponent<Animator>();
     }
     // Update is called once per frame
     void Update()
@@ -64,6 +66,10 @@ public class PlayerMovement : MonoBehaviour
         if (isMoving)
         {
             transform.position = Vector2.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+            Vector2 direction = (targetPosition - (Vector2)transform.position).normalized;
+            animator.SetFloat("moveX", direction.x);
+            animator.SetFloat("moveY", direction.y);
+            animator.SetBool("isMoving", true);
             if (Vector2.Distance(transform.position, targetPosition) < 0.05f)
             {
                 isMoving = false;
