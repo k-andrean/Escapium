@@ -136,45 +136,69 @@ public class GameUIManager : MonoBehaviour
     */
     public void InteractFlow(string interactionType)
     {
-        /*
-        if (currentInteractable == null) return;
-        if (isMoving) return;
-        if (interactButton.gameObject.activeSelf && dialoguePanel.activeSelf)
-        */
         if (dialoguePanel.activeSelf)
         {
             OnDialogClick();
             return;
         }
-        /*
-        switch (currentInteractable.interactableObjectName)
+
+        ShowDialog();
+        switch (interactionType)
         {
-            case "paperHint":
+            case "cupboard":
                 {
-                    ShowDialog();
-                    var itemPaperHintGuide = inventory.Find(item => (string)item["itemId"] == "paperHintGuide");
-                    if (itemPaperHintGuide != null)
+                    var hasVaseKey = inventory.Find(item => (string)item["itemId"] == "vase_key");
+                    var hasTorch = inventory.Find(item => (string)item["itemId"] == "torch");
+                    
+                    if (hasTorch != null)
                     {
                         dialogueLines.Clear();
-                        dialogueLines.Enqueue("You have read the hint and the hint is on the wall picture.");
+                        dialogueLines.Enqueue("You already have the torch.");
+                    }
+                    else if (hasVaseKey != null)
+                    {
+                        dialogueLines.Clear();
+                        dialogueLines.Enqueue("You unlocked the cupboard and found a torch!");
                         StartCoroutine(DialogueRoutine(() =>
                         {
+                            var newItem = new Dictionary<string, object>
+                            {
+                                { "itemId", "torch" },
+                                { "itemName", "Torch" },
+                                { "isUsed", false },
+                            };
+                            inventory.Add(newItem);
+                            DisplayInventory();
                             HideDialog();
                         }));
                     }
                     else
                     {
                         dialogueLines.Clear();
-                        dialogueLines.Enqueue("There is a paper in the floor and there is some writing on it.");
-                        dialogueLines.Enqueue("\"You are in the room and you have to escape from here.\"");
-                        dialogueLines.Enqueue("Find the key to escape from here.");
-                        dialogueLines.Enqueue("The hint is on the wall picture.");
+                        dialogueLines.Enqueue("The cupboard is locked. Maybe there's a key somewhere...");
+                        StartCoroutine(DialogueRoutine(() => HideDialog()));
+                    }
+                    break;
+                }
+            case "vase":
+                {
+                    var hasVaseKey = inventory.Find(item => (string)item["itemId"] == "vase_key");
+                    if (hasVaseKey != null)
+                    {
+                        dialogueLines.Clear();
+                        dialogueLines.Enqueue("The vase is empty.");
+                        StartCoroutine(DialogueRoutine(() => HideDialog()));
+                    }
+                    else
+                    {
+                        dialogueLines.Clear();
+                        dialogueLines.Enqueue("You found a small key inside the vase!");
                         StartCoroutine(DialogueRoutine(() =>
                         {
                             var newItem = new Dictionary<string, object>
                             {
-                                { "itemId", "paperHintGuide" },
-                                { "itemName", "Paper Hint Guide" },
+                                { "itemId", "vase_key" },
+                                { "itemName", "Vase Key" },
                                 { "isUsed", false },
                             };
                             inventory.Add(newItem);
@@ -184,33 +208,27 @@ public class GameUIManager : MonoBehaviour
                     }
                     break;
                 }
-            case "wallPicture":
+            case "book":
                 {
-                    ShowDialog();
-                    var itemPaperHintGuide = inventory.Find(item => (string)item["itemId"] == "paperHintGuide");
-                    var itemWallPictureKey = inventory.Find(item => (string)item["itemId"] == "wallPictureKey");
-                    if (itemWallPictureKey != null)
+                    var hasNumberClue = inventory.Find(item => (string)item["itemId"] == "number_clue");
+                    var hasDoorKey = inventory.Find(item => (string)item["itemId"] == "door_key");
+                    
+                    if (hasDoorKey != null)
                     {
                         dialogueLines.Clear();
-                        dialogueLines.Enqueue("You already have the key from wall picture.");
-                        StartCoroutine(DialogueRoutine(() =>
-                        {
-                            HideDialog();
-                        }));
+                        dialogueLines.Enqueue("You already have the door key.");
+                        StartCoroutine(DialogueRoutine(() => HideDialog()));
                     }
-                    else if (itemPaperHintGuide != null)
+                    else if (hasNumberClue != null)
                     {
                         dialogueLines.Clear();
-                        dialogueLines.Enqueue("From the hint that check on the picture wall.");
-                        dialogueLines.Enqueue("But after looking at the picture, you realize that there is gap between the wall and the picture.");
-                        dialogueLines.Enqueue("After check on the back of the picture. You found a key.");
-                        dialogueLines.Enqueue("Is it the key to escape from here?");
+                        dialogueLines.Enqueue("You found a door key hidden in the book!");
                         StartCoroutine(DialogueRoutine(() =>
                         {
                             var newItem = new Dictionary<string, object>
                             {
-                                { "itemId", "wallPictureKey" },
-                                { "itemName", "Wall Picture Key" },
+                                { "itemId", "door_key" },
+                                { "itemName", "Door Key" },
                                 { "isUsed", false },
                             };
                             inventory.Add(newItem);
@@ -221,42 +239,32 @@ public class GameUIManager : MonoBehaviour
                     else
                     {
                         dialogueLines.Clear();
-                        dialogueLines.Enqueue("It is a picture wall and have a beautiful women art.");
-                        StartCoroutine(DialogueRoutine(() =>
-                        {
-                            HideDialog();
-                        }));
+                        dialogueLines.Enqueue("Light reveals the truth beneath the fishtank.");
+                        StartCoroutine(DialogueRoutine(() => HideDialog()));
                     }
                     break;
                 }
-            case "cupBoard":
+            case "fishtank":
                 {
-                    ShowDialog();
-                    var itemWallPictureKey = inventory.Find(item => (string)item["itemId"] == "wallPictureKey");
-                    var itemCupBoardPaper = inventory.Find(item => (string)item["itemId"] == "cupBoardPaper");
-                    if (itemCupBoardPaper != null)
+                    var hasTorch = inventory.Find(item => (string)item["itemId"] == "torch");
+                    var hasNumberClue = inventory.Find(item => (string)item["itemId"] == "number_clue");
+                    
+                    if (hasNumberClue != null)
                     {
                         dialogueLines.Clear();
-                        dialogueLines.Enqueue("You already have the paper from cupboard.");
-                        StartCoroutine(DialogueRoutine(() =>
-                        {
-                            HideDialog();
-                        }));
+                        dialogueLines.Enqueue("The numbers are clearly visible: 781");
+                        StartCoroutine(DialogueRoutine(() => HideDialog()));
                     }
-                    else if (itemWallPictureKey != null)
+                    else if (hasTorch != null)
                     {
                         dialogueLines.Clear();
-                        dialogueLines.Enqueue("It is a cupboard, but it is locked.");
-                        dialogueLines.Enqueue("Maybe I can use the key that I have found before.");
-                        dialogueLines.Enqueue("\"Click\"");
-                        dialogueLines.Enqueue("Wah the cupboard is opened. Let's check it.");
-                        dialogueLines.Enqueue("You found two paper in the cupboard.");
+                        dialogueLines.Enqueue("With the torch, you can see the numbers clearly: 781");
                         StartCoroutine(DialogueRoutine(() =>
                         {
                             var newItem = new Dictionary<string, object>
                             {
-                                { "itemId", "cupBoardPaper" },
-                                { "itemName", "Cupboard Papers" },
+                                { "itemId", "number_clue" },
+                                { "itemName", "Number Clue" },
                                 { "isUsed", false },
                             };
                             inventory.Add(newItem);
@@ -267,107 +275,42 @@ public class GameUIManager : MonoBehaviour
                     else
                     {
                         dialogueLines.Clear();
-                        dialogueLines.Enqueue("It is a cupboard, but it is locked.");
-                        StartCoroutine(DialogueRoutine(() =>
-                        {
-                            HideDialog();
-                        }));
+                        dialogueLines.Enqueue("There seems to be some numbers hidden here, but it's too dark to see them clearly.");
+                        StartCoroutine(DialogueRoutine(() => HideDialog()));
                     }
                     break;
                 }
-            case "tableWithSquarePanel":
+            case "phone":
                 {
-                    ShowDialog();
-                    var itemCupBoardPaper = inventory.Find(item => (string)item["itemId"] == "cupBoardPaper");
-                    var itemTablePuzzleKey = inventory.Find(item => (string)item["itemId"] == "tablePuzzleKey");
-                    if (itemTablePuzzleKey != null)
+                    var hasNumberClue = inventory.Find(item => (string)item["itemId"] == "number_clue");
+                    if (hasNumberClue != null)
                     {
                         dialogueLines.Clear();
-                        dialogueLines.Enqueue("It is just a paper with unknown words.");
-                        StartCoroutine(DialogueRoutine(() =>
-                        {
-                            HideDialog();
-                        }));
-                    }
-                    else if (itemCupBoardPaper != null)
-                    {
-                        dialogueLines.Clear();
-                        dialogueLines.Enqueue("It is a table, and there is a piece of paper at top of the table.");
-                        dialogueLines.Enqueue("After check, it still need another piece of paper to able to read the content.");
-                        dialogueLines.Enqueue("\"Placing the papers\"");
-                        dialogueLines.Enqueue("\"The table shaking\"");
-                        dialogueLines.Enqueue("Wah the table shaking.");
-                        dialogueLines.Enqueue("Wait the bottom part of the table is opened.");
-                        dialogueLines.Enqueue("I found the key, hopefully it is the key to open the door.");
-                        StartCoroutine(DialogueRoutine(() =>
-                        {
-                            var newItem = new Dictionary<string, object>
-                            {
-                                { "itemId", "tablePuzzleKey" },
-                                { "itemName", "Table Puzzle Key" },
-                                { "isUsed", false },
-                            };
-                            inventory.Add(newItem);
-                            DisplayInventory();
-                            HideDialog();
-                        }));
+                        dialogueLines.Enqueue("Lift the book again and knock twice.");
+                        StartCoroutine(DialogueRoutine(() => HideDialog()));
                     }
                     else
                     {
                         dialogueLines.Clear();
-                        dialogueLines.Enqueue("It is a table, and there is a piece of paper at top of the table.");
-                        dialogueLines.Enqueue("After check, it still need another piece of paper to able to read the content.");
-                        StartCoroutine(DialogueRoutine(() =>
-                        {
-                            HideDialog();
-                        }));
+                        dialogueLines.Enqueue("The phone seems to be asking for a number...");
+                        StartCoroutine(DialogueRoutine(() => HideDialog()));
                     }
                     break;
                 }
             case "door":
                 {
-                    ShowDialog();
-                    var itemWallPictureKey = inventory.Find(item => (string)item["itemId"] == "wallPictureKey");
-                    var itemTablePuzzleKey = inventory.Find(item => (string)item["itemId"] == "tablePuzzleKey");
-                    if (itemWallPictureKey != null && itemTablePuzzleKey != null)
+                    var hasDoorKey = inventory.Find(item => (string)item["itemId"] == "door_key");
+                    if (hasDoorKey != null)
                     {
                         dialogueLines.Clear();
-                        dialogueLines.Enqueue("It is door and looking from the key hole is the field.");
-                        dialogueLines.Enqueue("It seems locked. I have find way to escape from here.");
-                        dialogueLines.Enqueue("I have found keys before. Hopefully one of the key can escape from here.");
-                        dialogueLines.Enqueue("\"Put key to the key hole\"");
-                        dialogueLines.Enqueue("\"Click\"");
-                        dialogueLines.Enqueue("Wah the door is opened.");
-                        dialogueLines.Enqueue("Congratulations. You have won the game.");
-                        StartCoroutine(DialogueRoutine(() =>
-                        {
-                            HideDialog();
-                            SceneLoader.Instance.LoadScene("MainMenuScene");
-                        }));
-                    }
-                    else if (itemWallPictureKey != null)
-                    {
-                        dialogueLines.Clear();
-                        dialogueLines.Enqueue("It is door and looking from the key hole is the field.");
-                        dialogueLines.Enqueue("It seems locked. I have find way to escape from here.");
-                        dialogueLines.Enqueue("I have found a key before. Hopefully one of the key can escape from here.");
-                        dialogueLines.Enqueue("\"Put key to the key hole\"");
-                        dialogueLines.Enqueue("No the key can not turn. Seems it is not the key for the door.");
-                        dialogueLines.Enqueue("I have to continue explore.");
-                        StartCoroutine(DialogueRoutine(() =>
-                        {
-                            HideDialog();
-                        }));
+                        dialogueLines.Enqueue("Congratulations! You've opened the door and escaped!");
+                        StartCoroutine(DialogueRoutine(() => HideDialog()));
                     }
                     else
                     {
                         dialogueLines.Clear();
-                        dialogueLines.Enqueue("It is door and looking from the key hole is the field.");
-                        dialogueLines.Enqueue("It seems locked. I have find way to escape from here.");
-                        StartCoroutine(DialogueRoutine(() =>
-                        {
-                            HideDialog();
-                        }));
+                        dialogueLines.Enqueue("The door is locked. You need a key to open it.");
+                        StartCoroutine(DialogueRoutine(() => HideDialog()));
                     }
                     break;
                 }
@@ -375,268 +318,6 @@ public class GameUIManager : MonoBehaviour
                 {
                     break;
                 }
-        }
-        */
-        if (interactionType == "itemInteraction")
-        {
-            if (currentInteractable == null) return;
-            switch (currentInteractable.interactableObjectName)
-            {
-                case "paperHint":
-                    {
-                        ShowDialog();
-                        var itemPaperHintGuide = inventory.Find(item => (string)item["itemId"] == "paperHintGuide");
-                        if (itemPaperHintGuide != null)
-                        {
-                            dialogueLines.Clear();
-                            dialogueLines.Enqueue("You have read the hint and the hint is on the wall picture.");
-                            StartCoroutine(DialogueRoutine(() =>
-                            {
-                                HideDialog();
-                            }));
-                        }
-                        else
-                        {
-                            dialogueLines.Clear();
-                            dialogueLines.Enqueue("There is a paper in the floor and there is some writing on it.");
-                            dialogueLines.Enqueue("\"You are in the room and you have to escape from here.\"");
-                            dialogueLines.Enqueue("Find the key to escape from here.");
-                            dialogueLines.Enqueue("The hint is on the wall picture.");
-                            StartCoroutine(DialogueRoutine(() =>
-                            {
-                                var newItem = new Dictionary<string, object>
-                                {
-                                    { "itemId", "paperHintGuide" },
-                                    { "itemName", "Paper Hint Guide" },
-                                    { "isUsed", false },
-                                };
-                                inventory.Add(newItem);
-                                DisplayInventory();
-                                HideDialog();
-                            }));
-                        }
-                        break;
-                    }
-                case "wallPicture":
-                    {
-                        ShowDialog();
-                        var itemPaperHintGuide = inventory.Find(item => (string)item["itemId"] == "paperHintGuide");
-                        var itemWallPictureKey = inventory.Find(item => (string)item["itemId"] == "wallPictureKey");
-                        if (itemWallPictureKey != null)
-                        {
-                            dialogueLines.Clear();
-                            dialogueLines.Enqueue("You already have the key from wall picture.");
-                            StartCoroutine(DialogueRoutine(() =>
-                            {
-                                HideDialog();
-                            }));
-                        }
-                        else if (itemPaperHintGuide != null)
-                        {
-                            dialogueLines.Clear();
-                            dialogueLines.Enqueue("From the hint that check on the picture wall.");
-                            dialogueLines.Enqueue("But after looking at the picture, you realize that there is gap between the wall and the picture.");
-                            dialogueLines.Enqueue("After check on the back of the picture. You found a key.");
-                            dialogueLines.Enqueue("Is it the key to escape from here?");
-                            StartCoroutine(DialogueRoutine(() =>
-                            {
-                                var newItem = new Dictionary<string, object>
-                                {
-                                    { "itemId", "wallPictureKey" },
-                                    { "itemName", "Wall Picture Key" },
-                                    { "isUsed", false },
-                                };
-                                inventory.Add(newItem);
-                                DisplayInventory();
-                                HideDialog();
-                            }));
-                        }
-                        else
-                        {
-                            dialogueLines.Clear();
-                            dialogueLines.Enqueue("It is a picture wall and have a beautiful women art.");
-                            StartCoroutine(DialogueRoutine(() =>
-                            {
-                                HideDialog();
-                            }));
-                        }
-                        break;
-                    }
-                case "cupBoard":
-                    {
-                        ShowDialog();
-                        var itemWallPictureKey = inventory.Find(item => (string)item["itemId"] == "wallPictureKey");
-                        var itemCupBoardPaper = inventory.Find(item => (string)item["itemId"] == "cupBoardPaper");
-                        if (itemCupBoardPaper != null)
-                        {
-                            dialogueLines.Clear();
-                            dialogueLines.Enqueue("You already have the paper from cupboard.");
-                            StartCoroutine(DialogueRoutine(() =>
-                            {
-                                HideDialog();
-                            }));
-                        }
-                        else if (itemWallPictureKey != null)
-                        {
-                            dialogueLines.Clear();
-                            dialogueLines.Enqueue("It is a cupboard, but it is locked.");
-                            dialogueLines.Enqueue("Maybe I can use the key that I have found before.");
-                            dialogueLines.Enqueue("\"Click\"");
-                            dialogueLines.Enqueue("Wah the cupboard is opened. Let's check it.");
-                            dialogueLines.Enqueue("You found two paper in the cupboard.");
-                            StartCoroutine(DialogueRoutine(() =>
-                            {
-                                var newItem = new Dictionary<string, object>
-                                {
-                                    { "itemId", "cupBoardPaper" },
-                                    { "itemName", "Cupboard Papers" },
-                                    { "isUsed", false },
-                                };
-                                inventory.Add(newItem);
-                                DisplayInventory();
-                                HideDialog();
-                            }));
-                        }
-                        else
-                        {
-                            dialogueLines.Clear();
-                            dialogueLines.Enqueue("It is a cupboard, but it is locked.");
-                            StartCoroutine(DialogueRoutine(() =>
-                            {
-                                HideDialog();
-                            }));
-                        }
-                        break;
-                    }
-                case "tableWithSquarePanel":
-                    {
-                        ShowDialog();
-                        var itemCupBoardPaper = inventory.Find(item => (string)item["itemId"] == "cupBoardPaper");
-                        var itemTablePuzzleKey = inventory.Find(item => (string)item["itemId"] == "tablePuzzleKey");
-                        if (itemTablePuzzleKey != null)
-                        {
-                            dialogueLines.Clear();
-                            dialogueLines.Enqueue("It is just a paper with unknown words.");
-                            StartCoroutine(DialogueRoutine(() =>
-                            {
-                                HideDialog();
-                            }));
-                        }
-                        else if (itemCupBoardPaper != null)
-                        {
-                            dialogueLines.Clear();
-                            dialogueLines.Enqueue("It is a table, and there is a piece of paper at top of the table.");
-                            dialogueLines.Enqueue("After check, it still need another piece of paper to able to read the content.");
-                            dialogueLines.Enqueue("\"Placing the papers\"");
-                            dialogueLines.Enqueue("\"The table shaking\"");
-                            dialogueLines.Enqueue("Wah the table shaking.");
-                            dialogueLines.Enqueue("Wait the bottom part of the table is opened.");
-                            dialogueLines.Enqueue("I found the key, hopefully it is the key to open the door.");
-                            StartCoroutine(DialogueRoutine(() =>
-                            {
-                                var newItem = new Dictionary<string, object>
-                                {
-                                    { "itemId", "tablePuzzleKey" },
-                                    { "itemName", "Table Puzzle Key" },
-                                    { "isUsed", false },
-                                };
-                                inventory.Add(newItem);
-                                DisplayInventory();
-                                HideDialog();
-                            }));
-                        }
-                        else
-                        {
-                            dialogueLines.Clear();
-                            dialogueLines.Enqueue("It is a table, and there is a piece of paper at top of the table.");
-                            dialogueLines.Enqueue("After check, it still need another piece of paper to able to read the content.");
-                            StartCoroutine(DialogueRoutine(() =>
-                            {
-                                HideDialog();
-                            }));
-                        }
-                        break;
-                    }
-                case "door":
-                    {
-                        ShowDialog();
-                        var itemWallPictureKey = inventory.Find(item => (string)item["itemId"] == "wallPictureKey");
-                        var itemTablePuzzleKey = inventory.Find(item => (string)item["itemId"] == "tablePuzzleKey");
-                        if (itemWallPictureKey != null && itemTablePuzzleKey != null)
-                        {
-                            dialogueLines.Clear();
-                            dialogueLines.Enqueue("It is door and looking from the key hole is the field.");
-                            dialogueLines.Enqueue("It seems locked. I have find way to escape from here.");
-                            dialogueLines.Enqueue("I have found keys before. Hopefully one of the key can escape from here.");
-                            dialogueLines.Enqueue("\"Put key to the key hole\"");
-                            dialogueLines.Enqueue("\"Click\"");
-                            dialogueLines.Enqueue("Wah the door is opened.");
-                            dialogueLines.Enqueue("Congratulations. You have won the game.");
-                            StartCoroutine(DialogueRoutine(() =>
-                            {
-                                HideDialog();
-                                SceneLoader.Instance.LoadScene("MainMenuScene");
-                            }));
-                        }
-                        else if (itemWallPictureKey != null)
-                        {
-                            dialogueLines.Clear();
-                            dialogueLines.Enqueue("It is door and looking from the key hole is the field.");
-                            dialogueLines.Enqueue("It seems locked. I have find way to escape from here.");
-                            dialogueLines.Enqueue("I have found a key before. Hopefully one of the key can escape from here.");
-                            dialogueLines.Enqueue("\"Put key to the key hole\"");
-                            dialogueLines.Enqueue("No the key can not turn. Seems it is not the key for the door.");
-                            dialogueLines.Enqueue("I have to continue explore.");
-                            StartCoroutine(DialogueRoutine(() =>
-                            {
-                                HideDialog();
-                            }));
-                        }
-                        else
-                        {
-                            dialogueLines.Clear();
-                            dialogueLines.Enqueue("It is door and looking from the key hole is the field.");
-                            dialogueLines.Enqueue("It seems locked. I have find way to escape from here.");
-                            StartCoroutine(DialogueRoutine(() =>
-                            {
-                                HideDialog();
-                            }));
-                        }
-                        break;
-                    }
-                default:
-                    {
-                        break;
-                    }
-            }
-        }
-        else if (interactionType == "inventoryItemInteraction")
-        {
-            if (selectedItem != null)
-            {
-                switch (selectedItem.itemId)
-                {
-                    case "paperHintGuide":
-                        {
-                            ShowDialog();
-                            dialogueLines.Clear();
-                            dialogueLines.Enqueue("You have found a paper with text on it before.");
-                            dialogueLines.Enqueue("\"You are in the room and you have to escape from here.\"");
-                            dialogueLines.Enqueue("Find the key to escape from here.");
-                            dialogueLines.Enqueue("The hint is on the wall picture.");
-                            Debug.Log($"is selected123: {selectedItem.itemId}, itemId: {selectedItem.itemId}, itemName: {selectedItem.itemName}");
-                            StartCoroutine(DialogueRoutine(() =>
-                            {
-                                HideDialog();
-                            }));
-                            break;
-                        }
-                    default:
-                        {
-                            break;
-                        }
-                }
-            }
         }
     }
     private void OnDialogClick()

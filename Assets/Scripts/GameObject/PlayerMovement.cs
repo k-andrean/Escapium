@@ -96,6 +96,15 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.CompareTag("Wall") || collision.gameObject.CompareTag("Block Object"))
         {
             isColliding = true;
+            isMoving = false;
+            animator.SetBool("isMoving", false);
+            targetPosition = transform.position;
+        }
+        else if (collision.gameObject.GetComponent<InteractableObject>() != null)
+        {
+            isMoving = false;
+            animator.SetBool("isMoving", false);
+            targetPosition = transform.position;
         }
     }
     void OnCollisionExit2D(Collision2D collision)
