@@ -19,6 +19,9 @@ public class GameUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI dialogueText;
     [SerializeField] private Button dialogueForegroundClickAnywhere;
     [SerializeField] private float typingSpeed = 0.05f;
+    [SerializeField] private GameObject winPanel;
+    [SerializeField] private Button playAgainWinPanelButton;
+    [SerializeField] private Button mainMenuWinPanelButton;
     [SerializeField] private Light2D globalLightObject;
     [SerializeField] private Light2D playerLightObject;
 
@@ -64,6 +67,22 @@ public class GameUIManager : MonoBehaviour
         foreach (var item in inventoryItemSprites)
         {
             spriteLookup[item.itemId] = item.sprite;
+        }
+        if (playAgainWinPanelButton != null)
+        {
+            playAgainWinPanelButton.onClick.AddListener(() =>
+            {
+                winPanel.SetActive(false);
+                SceneLoader.Instance.ReloadCurrentScene();
+            });
+        }
+        if (mainMenuWinPanelButton != null)
+        {
+            mainMenuWinPanelButton.onClick.AddListener(() =>
+            {
+                winPanel.SetActive(false);
+                SceneLoader.Instance.LoadScene("MainMenuScene");
+            });
         }
     }
     void DisplayInventory()
@@ -376,6 +395,7 @@ public class GameUIManager : MonoBehaviour
                             dialogueLines.Enqueue("Congratulations! You've opened the door and escaped!");
                             StartCoroutine(DialogueRoutine(() => {
                                 HideDialog();
+                                winPanel.SetActive(true);
                             }));
                         }
                         else
