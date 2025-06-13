@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class GameUIManager : MonoBehaviour
 {
     public static GameUIManager Instance;
+    public PlayerMovement playerMovement;
     [System.Serializable]
     private struct InventoryItemSprite
     {

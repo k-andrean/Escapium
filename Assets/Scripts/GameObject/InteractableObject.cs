@@ -87,5 +87,6 @@ public class InteractableObject : MonoBehaviour
         GameUIManager.Instance.InteractFlow();
         */
         GameUIManager.Instance.InteractFlow("itemInteraction");
+        GameUIManager.Instance.playerMovement.SetMovementPaused(true);
     }
 }

@@ -136,4 +136,10 @@ public class PlayerMovement : MonoBehaviour
             lastEffectTime = Time.time;
         }
     }
+    public void SetMovementPaused(bool paused)
+    {
+        isMoving = false;
+        animator.SetBool("isMoving", false);
+        targetPosition = transform.position;
+    }
 }

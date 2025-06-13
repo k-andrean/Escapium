@@ -7310,6 +7310,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f14835cb7be9e4c418bb77a613fefbc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerMovement: {fileID: 705579278}
   dialoguePanel: {fileID: 1788825842}
   dialogueText: {fileID: 1590424885}
   dialogueForegroundClickAnywhere: {fileID: 309526990}
