@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
 public class GameUIManager : MonoBehaviour
@@ -18,6 +19,8 @@ public class GameUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI dialogueText;
     [SerializeField] private Button dialogueForegroundClickAnywhere;
     [SerializeField] private float typingSpeed = 0.05f;
+    [SerializeField] private Light2D globalLightObject;
+    [SerializeField] private Light2D playerLightObject;
 
     [Header("Mobile UI")]
     [SerializeField] private Button interactButton;
@@ -143,181 +146,374 @@ public class GameUIManager : MonoBehaviour
         }
 
         ShowDialog();
-        switch (interactionType)
+        if (interactionType == "itemInteraction")
         {
-            case "cupboard":
-                {
-                    var hasVaseKey = inventory.Find(item => (string)item["itemId"] == "vase_key");
-                    var hasTorch = inventory.Find(item => (string)item["itemId"] == "torch");
-                    
-                    if (hasTorch != null)
+            if (currentInteractable == null) return;
+            switch (currentInteractable.interactableObjectName)
+            {
+                case "cupboard":
                     {
-                        dialogueLines.Clear();
-                        dialogueLines.Enqueue("You already have the torch.");
-                    }
-                    else if (hasVaseKey != null)
-                    {
-                        dialogueLines.Clear();
-                        dialogueLines.Enqueue("You unlocked the cupboard and found a torch!");
-                        StartCoroutine(DialogueRoutine(() =>
+                        var hasVaseKey = inventory.Find(item => (string)item["itemId"] == "vaseKey");
+                        var hasTorch = inventory.Find(item => (string)item["itemId"] == "torch");
+                        if (hasTorch != null)
                         {
-                            var newItem = new Dictionary<string, object>
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("The cupboard is already empty.");
+                            StartCoroutine(DialogueRoutine(() =>
                             {
-                                { "itemId", "torch" },
-                                { "itemName", "Torch" },
-                                { "isUsed", false },
-                            };
-                            inventory.Add(newItem);
-                            DisplayInventory();
+                                HideDialog();
+                            }));
+                        }
+                        else if (hasVaseKey != null)
+                        {
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("You unlocked the cupboard and found a torch!");
+                            StartCoroutine(DialogueRoutine(() =>
+                            {
+                                var newItem = new Dictionary<string, object>
+                                {
+                                    { "itemId", "torch" },
+                                    { "itemName", "Torch" },
+                                    { "isUsed", false },
+                                };
+                                inventory.Add(newItem);
+                                DisplayInventory();
+                                globalLightObject.intensity = 0.07f;
+                                dialogueLines.Clear();
+                                dialogueLines.Enqueue("Wah, suddenly you heard a click sound and the room become dark!");
+                                StartCoroutine(DialogueRoutine(() =>
+                                {
+                                    HideDialog();
+                                }));
+                            }));
+                        }
+                        else
+                        {
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("The cupboard is locked. Maybe there's a key somewhere...");
+                            StartCoroutine(DialogueRoutine(() =>
+                            {
+                                HideDialog();
+                            }));
+                        }
+                        break;
+                    }
+                case "vase":
+                    {
+                        var hasVaseKey = inventory.Find(item => (string)item["itemId"] == "vase_key");
+                        if (hasVaseKey != null)
+                        {
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("The vase is empty.");
+                            StartCoroutine(DialogueRoutine(() =>
+                            {
+                                HideDialog();
+                            }));
+                        }
+                        else
+                        {
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("There's a vase on the cupboard!");
+                            dialogueLines.Enqueue("After you check inside of the vase, you found there is a key inside the vase!");
+                            dialogueLines.Enqueue("You use the superman power to break the vase!");
+                            dialogueLines.Enqueue("You found a small key inside the vase!");
+                            StartCoroutine(DialogueRoutine(() =>
+                            {
+                                var newItem = new Dictionary<string, object>
+                                {
+                                    { "itemId", "vaseKey" },
+                                    { "itemName", "Vase Key" },
+                                    { "isUsed", false },
+                                };
+                                inventory.Add(newItem);
+                                DisplayInventory();
+                                HideDialog();
+                            }));
+                        }
+                        break;
+                    }
+                case "book":
+                    {
+                        var hasPhoneClue = inventory.Find(item => (string)item["itemId"] == "phoneClue");
+                        var hasBookClue = inventory.Find(item => (string)item["itemId"] == "bookClue");
+                        var hasBookKey = inventory.Find(item => (string)item["itemId"] == "bookKey");
+                        if (hasBookKey != null)
+                        {
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("You already have the book key.");
+                            StartCoroutine(DialogueRoutine(() =>
+                            {
+                                HideDialog();
+                            }));
+                        }
+                        else if (hasPhoneClue != null)
+                        {
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("You found a book key hidden in the book!");
+                            StartCoroutine(DialogueRoutine(() =>
+                            {
+                                var newItem = new Dictionary<string, object>
+                                {
+                                    { "itemId", "bookKey" },
+                                    { "itemName", "Book Key" },
+                                    { "isUsed", false },
+                                };
+                                inventory.Add(newItem);
+                                DisplayInventory();
+                                HideDialog();
+                            }));
+                        }
+                        else if (hasBookClue != null)
+                        {
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("You already have the book clue.");
+                            dialogueLines.Enqueue("The clue wrote `Light reveals the truth beneath the fish tank.`");
+                            StartCoroutine(DialogueRoutine(() =>
+                            {
+                                HideDialog();
+                            }));
+                        }
+                        else
+                        {
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("There's a book on the table.");
+                            dialogueLines.Enqueue("The book wrote `Light reveals the truth beneath the fish tank.`");
+                            StartCoroutine(DialogueRoutine(() =>
+                            {
+                                var newItem = new Dictionary<string, object>
+                                {
+                                    { "itemId", "bookClue" },
+                                    { "itemName", "Book Clue" },
+                                    { "isUsed", false },
+                                };
+                                inventory.Add(newItem);
+                                DisplayInventory();
+                                HideDialog();
+                            }));
+                        }
+                        break;
+                    }
+                case "fishTank":
+                    {
+                        var hasTorch = inventory.Find(item => (string)item["itemId"] == "torch");
+                        var hasNumberClue = inventory.Find(item => (string)item["itemId"] == "fishTankNumberClue");
+                        if (hasNumberClue != null)
+                        {
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("The numbers are clearly visible: 781");
+                            StartCoroutine(DialogueRoutine(() =>
+                            {
+                                HideDialog();
+                            }));
+                        }
+                        else if (hasTorch != null)
+                        {
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("With the torch, you can see the numbers clearly: 781");
+                            StartCoroutine(DialogueRoutine(() =>
+                            {
+                                var newItem = new Dictionary<string, object>
+                                {
+                                    { "itemId", "fishTankNumberClue" },
+                                    { "itemName", "Number Clue" },
+                                    { "isUsed", false },
+                                };
+                                inventory.Add(newItem);
+                                DisplayInventory();
+                                HideDialog();
+                            }));
+                        }
+                        else
+                        {
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("There is a fish in the fish tank.");
+                            dialogueLines.Enqueue("There seems to be some numbers hidden here, but it's too dark to see them clearly.");
+                            StartCoroutine(DialogueRoutine(() =>
+                            {
+                                HideDialog();
+                            }));
+                        }
+                        break;
+                    }
+                case "phone":
+                    {
+                        var hasNumberClue = inventory.Find(item => (string)item["itemId"] == "fishTankNumberClue");
+                        if (hasNumberClue != null)
+                        {
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("You input the number you found previously.");
+                            dialogueLines.Enqueue("The phone response `Lift the book again and knock twice.`");
+                            StartCoroutine(DialogueRoutine(() => {
+                                var newItem = new Dictionary<string, object>
+                                {
+                                    { "itemId", "phoneClue" },
+                                    { "itemName", "Phone Clue" },
+                                    { "isUsed", false },
+                                };
+                                inventory.Add(newItem);
+                                DisplayInventory();
+                                HideDialog();
+                            }));
+                        }
+                        else
+                        {
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("The phone seems to be asking for a number...");
+                            StartCoroutine(DialogueRoutine(() => {
+                                HideDialog();
+                            }));
+                        }
+                        break;
+                    }
+                case "door":
+                    {
+                        var hasBookKey = inventory.Find(item => (string)item["itemId"] == "bookKey");
+                        if (hasBookKey != null)
+                        {
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("You try to insert the key you found before.");
+                            dialogueLines.Enqueue("You hear a click sound and the door is now unlocked!");
+                            dialogueLines.Enqueue("Congratulations! You've opened the door and escaped!");
+                            StartCoroutine(DialogueRoutine(() => {
+                                HideDialog();
+                            }));
+                        }
+                        else
+                        {
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("The door is locked. You need a key to open it.");
+                            StartCoroutine(DialogueRoutine(() => {
+                                HideDialog();
+                            }));
+                        }
+                        break;
+                    }
+                case "portraitPicture":
+                    {
+                        if (globalLightObject.intensity == 0.07f)
+                        {
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("There is a portrait picture.");
+                            dialogueLines.Enqueue("Suddenly you found a hidden switch.");
+                            dialogueLines.Enqueue("You click the switch and the light in the room turn on.");
+                            StartCoroutine(DialogueRoutine(() => {
+                                globalLightObject.intensity = 1f;
+                                HideDialog();
+                            }));
+                        }
+                        else
+                        {
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("There is a portrait picture.");
+                            StartCoroutine(DialogueRoutine(() => {
+                                HideDialog();
+                            }));
+                        }
+                        break;
+                    }
+                case "boxes":
+                    {
+                        dialogueLines.Clear();
+                        dialogueLines.Enqueue("There is a lot of box in here.");
+                        StartCoroutine(DialogueRoutine(() => {
                             HideDialog();
                         }));
+                        break;
                     }
-                    else
+                case "clock":
                     {
                         dialogueLines.Clear();
-                        dialogueLines.Enqueue("The cupboard is locked. Maybe there's a key somewhere...");
-                        StartCoroutine(DialogueRoutine(() => HideDialog()));
-                    }
-                    break;
-                }
-            case "vase":
-                {
-                    var hasVaseKey = inventory.Find(item => (string)item["itemId"] == "vase_key");
-                    if (hasVaseKey != null)
-                    {
-                        dialogueLines.Clear();
-                        dialogueLines.Enqueue("The vase is empty.");
-                        StartCoroutine(DialogueRoutine(() => HideDialog()));
-                    }
-                    else
-                    {
-                        dialogueLines.Clear();
-                        dialogueLines.Enqueue("You found a small key inside the vase!");
-                        StartCoroutine(DialogueRoutine(() =>
-                        {
-                            var newItem = new Dictionary<string, object>
-                            {
-                                { "itemId", "vase_key" },
-                                { "itemName", "Vase Key" },
-                                { "isUsed", false },
-                            };
-                            inventory.Add(newItem);
-                            DisplayInventory();
+                        dialogueLines.Enqueue("There is a clock on the wall.");
+                        StartCoroutine(DialogueRoutine(() => {
                             HideDialog();
                         }));
+                        break;
                     }
-                    break;
-                }
-            case "book":
+                default:
+                    {
+                        break;
+                    }
+            }
+        }
+        else if (interactionType == "inventoryItemInteraction")
+        {
+            if (selectedItem != null)
+            {
+                switch (selectedItem.itemId)
                 {
-                    var hasNumberClue = inventory.Find(item => (string)item["itemId"] == "number_clue");
-                    var hasDoorKey = inventory.Find(item => (string)item["itemId"] == "door_key");
-                    
-                    if (hasDoorKey != null)
-                    {
-                        dialogueLines.Clear();
-                        dialogueLines.Enqueue("You already have the door key.");
-                        StartCoroutine(DialogueRoutine(() => HideDialog()));
-                    }
-                    else if (hasNumberClue != null)
-                    {
-                        dialogueLines.Clear();
-                        dialogueLines.Enqueue("You found a door key hidden in the book!");
-                        StartCoroutine(DialogueRoutine(() =>
+                    case "torch":
                         {
-                            var newItem = new Dictionary<string, object>
+                            ShowDialog();
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("You turn on the torch you have found before.");
+                            StartCoroutine(DialogueRoutine(() =>
                             {
-                                { "itemId", "door_key" },
-                                { "itemName", "Door Key" },
-                                { "isUsed", false },
-                            };
-                            inventory.Add(newItem);
-                            DisplayInventory();
-                            HideDialog();
-                        }));
-                    }
-                    else
-                    {
-                        dialogueLines.Clear();
-                        dialogueLines.Enqueue("Light reveals the truth beneath the fishtank.");
-                        StartCoroutine(DialogueRoutine(() => HideDialog()));
-                    }
-                    break;
-                }
-            case "fishtank":
-                {
-                    var hasTorch = inventory.Find(item => (string)item["itemId"] == "torch");
-                    var hasNumberClue = inventory.Find(item => (string)item["itemId"] == "number_clue");
-                    
-                    if (hasNumberClue != null)
-                    {
-                        dialogueLines.Clear();
-                        dialogueLines.Enqueue("The numbers are clearly visible: 781");
-                        StartCoroutine(DialogueRoutine(() => HideDialog()));
-                    }
-                    else if (hasTorch != null)
-                    {
-                        dialogueLines.Clear();
-                        dialogueLines.Enqueue("With the torch, you can see the numbers clearly: 781");
-                        StartCoroutine(DialogueRoutine(() =>
+                                playerLightObject.gameObject.SetActive(true);
+                                HideDialog();
+                            }));
+                            break;
+                        }
+                    case "vaseKey":
                         {
-                            var newItem = new Dictionary<string, object>
+                            ShowDialog();
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("This is a key you found from vase.");
+                            StartCoroutine(DialogueRoutine(() =>
                             {
-                                { "itemId", "number_clue" },
-                                { "itemName", "Number Clue" },
-                                { "isUsed", false },
-                            };
-                            inventory.Add(newItem);
-                            DisplayInventory();
-                            HideDialog();
-                        }));
-                    }
-                    else
-                    {
-                        dialogueLines.Clear();
-                        dialogueLines.Enqueue("There seems to be some numbers hidden here, but it's too dark to see them clearly.");
-                        StartCoroutine(DialogueRoutine(() => HideDialog()));
-                    }
-                    break;
+                                HideDialog();
+                            }));
+                            break;
+                        }
+                    case "bookKey":
+                        {
+                            ShowDialog();
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("This is a key you found from book.");
+                            StartCoroutine(DialogueRoutine(() =>
+                            {
+                                HideDialog();
+                            }));
+                            break;
+                        }
+                    case "bookClue":
+                        {
+                            ShowDialog();
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("This is clue you note from the book.");
+                            StartCoroutine(DialogueRoutine(() =>
+                            {
+                                HideDialog();
+                            }));
+                            break;
+                        }
+                    case "fishTankNumberClue":
+                        {
+                            ShowDialog();
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("This is clue you note from the fish tank.");
+                            StartCoroutine(DialogueRoutine(() =>
+                            {
+                                HideDialog();
+                            }));
+                            break;
+                        }
+                    case "phoneClue":
+                        {
+                            ShowDialog();
+                            dialogueLines.Clear();
+                            dialogueLines.Enqueue("This is clue you note from the phone.");
+                            StartCoroutine(DialogueRoutine(() =>
+                            {
+                                HideDialog();
+                            }));
+                            break;
+                        }
+                    default:
+                        {
+                            break;
+                        }
                 }
-            case "phone":
-                {
-                    var hasNumberClue = inventory.Find(item => (string)item["itemId"] == "number_clue");
-                    if (hasNumberClue != null)
-                    {
-                        dialogueLines.Clear();
-                        dialogueLines.Enqueue("Lift the book again and knock twice.");
-                        StartCoroutine(DialogueRoutine(() => HideDialog()));
-                    }
-                    else
-                    {
-                        dialogueLines.Clear();
-                        dialogueLines.Enqueue("The phone seems to be asking for a number...");
-                        StartCoroutine(DialogueRoutine(() => HideDialog()));
-                    }
-                    break;
-                }
-            case "door":
-                {
-                    var hasDoorKey = inventory.Find(item => (string)item["itemId"] == "door_key");
-                    if (hasDoorKey != null)
-                    {
-                        dialogueLines.Clear();
-                        dialogueLines.Enqueue("Congratulations! You've opened the door and escaped!");
-                        StartCoroutine(DialogueRoutine(() => HideDialog()));
-                    }
-                    else
-                    {
-                        dialogueLines.Clear();
-                        dialogueLines.Enqueue("The door is locked. You need a key to open it.");
-                        StartCoroutine(DialogueRoutine(() => HideDialog()));
-                    }
-                    break;
-                }
-            default:
-                {
-                    break;
-                }
+            }
         }
     }
     private void OnDialogClick()
