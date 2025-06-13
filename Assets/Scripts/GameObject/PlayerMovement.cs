@@ -74,6 +74,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 isMoving = false;
                 GameUIManager.Instance.isMoving = false;
+                animator.SetBool("isMoving", false);
             }
         }
         if (isColliding && (Vector2)transform.position != targetPosition)
@@ -89,6 +90,10 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             stuckTimer = 0f;
+        }
+        if (!isMoving && animator.GetBool("isMoving"))
+        {
+            animator.SetBool("isMoving", false);
         }
     }
     void OnCollisionEnter2D(Collision2D collision)
