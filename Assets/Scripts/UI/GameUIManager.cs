@@ -177,7 +177,7 @@ public class GameUIManager : MonoBehaviour
                         if (hasTorch != null)
                         {
                             dialogueLines.Clear();
-                            dialogueLines.Enqueue("The cupboard is already empty.");
+                            dialogueLines.Enqueue("The cupboard is empty.");
                             StartCoroutine(DialogueRoutine(() =>
                             {
                                 HideDialog();
@@ -199,7 +199,7 @@ public class GameUIManager : MonoBehaviour
                                 DisplayInventory();
                                 globalLightObject.intensity = 0.07f;
                                 dialogueLines.Clear();
-                                dialogueLines.Enqueue("Wah, suddenly you heard a click sound and the room become dark!");
+                                dialogueLines.Enqueue("You heard a click sound and the room suddenly become dark!");
                                 StartCoroutine(DialogueRoutine(() =>
                                 {
                                     HideDialog();
@@ -232,10 +232,10 @@ public class GameUIManager : MonoBehaviour
                         else
                         {
                             dialogueLines.Clear();
-                            dialogueLines.Enqueue("There's a vase on the cupboard!");
-                            dialogueLines.Enqueue("After you check inside of the vase, you found there is a key inside the vase!");
-                            dialogueLines.Enqueue("You use the superman power to break the vase!");
-                            dialogueLines.Enqueue("You found a small key inside the vase!");
+                            dialogueLines.Enqueue("You look inside the vase!");
+                            dialogueLines.Enqueue("there is a things shaped like key hidden inside the vase!");
+                            dialogueLines.Enqueue("You smash open the vase!");
+                            dialogueLines.Enqueue("Found a small key with rounded tip inside the vase!");
                             StartCoroutine(DialogueRoutine(() =>
                             {
                                 var newItem = new Dictionary<string, object>
@@ -259,7 +259,8 @@ public class GameUIManager : MonoBehaviour
                         if (hasBookKey != null)
                         {
                             dialogueLines.Clear();
-                            dialogueLines.Enqueue("You already have the book key.");
+                            dialogueLines.Enqueue("You inspect the book hidden compartment again.");
+                            dialogueLines.Enqueue("nothing there.");
                             StartCoroutine(DialogueRoutine(() =>
                             {
                                 HideDialog();
@@ -268,7 +269,8 @@ public class GameUIManager : MonoBehaviour
                         else if (hasPhoneClue != null)
                         {
                             dialogueLines.Clear();
-                            dialogueLines.Enqueue("You found a book key hidden in the book!");
+                            dialogueLines.Enqueue("You flipped the book and found a hidden compartment!");
+                            dialogueLines.Enqueue("You pry open the compartment and found small book shaped key!");
                             StartCoroutine(DialogueRoutine(() =>
                             {
                                 var newItem = new Dictionary<string, object>
@@ -285,8 +287,8 @@ public class GameUIManager : MonoBehaviour
                         else if (hasBookClue != null)
                         {
                             dialogueLines.Clear();
-                            dialogueLines.Enqueue("You already have the book clue.");
-                            dialogueLines.Enqueue("The clue wrote `Light reveals the truth beneath the fish tank.`");
+                            dialogueLines.Enqueue("You check the clue content again.");
+                            dialogueLines.Enqueue("`Light reveals the truth beneath the fish tank.`");
                             StartCoroutine(DialogueRoutine(() =>
                             {
                                 HideDialog();
@@ -295,8 +297,9 @@ public class GameUIManager : MonoBehaviour
                         else
                         {
                             dialogueLines.Clear();
-                            dialogueLines.Enqueue("There's a book on the table.");
-                            dialogueLines.Enqueue("The book wrote `Light reveals the truth beneath the fish tank.`");
+                            dialogueLines.Enqueue("You inspect pile of books on the table.");
+                            dialogueLines.Enqueue("You noticed there is an oddly shaped book hidden between the stack.");
+                            dialogueLines.Enqueue("You opened the book and found the clue `Light reveals the truth beneath the fish tank.`");
                             StartCoroutine(DialogueRoutine(() =>
                             {
                                 var newItem = new Dictionary<string, object>
@@ -319,7 +322,7 @@ public class GameUIManager : MonoBehaviour
                         if (hasNumberClue != null)
                         {
                             dialogueLines.Clear();
-                            dialogueLines.Enqueue("The numbers are clearly visible: 781");
+                            dialogueLines.Enqueue("The numbers 781 are clearly visible");
                             StartCoroutine(DialogueRoutine(() =>
                             {
                                 HideDialog();
@@ -328,7 +331,8 @@ public class GameUIManager : MonoBehaviour
                         else if (hasTorch != null)
                         {
                             dialogueLines.Clear();
-                            dialogueLines.Enqueue("With the torch, you can see the numbers clearly: 781");
+                             dialogueLines.Enqueue("You take out the torch you found earlier from cupboard");
+                            dialogueLines.Enqueue("after shoning on the back of fishtank, you can see the numbers 781 clearly");
                             StartCoroutine(DialogueRoutine(() =>
                             {
                                 var newItem = new Dictionary<string, object>
@@ -345,8 +349,9 @@ public class GameUIManager : MonoBehaviour
                         else
                         {
                             dialogueLines.Clear();
-                            dialogueLines.Enqueue("There is a fish in the fish tank.");
+                            dialogueLines.Enqueue("Multi colored fish is swimming in the fish tank.");
                             dialogueLines.Enqueue("There seems to be some numbers hidden here, but it's too dark to see them clearly.");
+                            dialogueLines.Enqueue("Maybe if you use any light source, the content can be seen.");
                             StartCoroutine(DialogueRoutine(() =>
                             {
                                 HideDialog();
@@ -360,8 +365,10 @@ public class GameUIManager : MonoBehaviour
                         if (hasNumberClue != null)
                         {
                             dialogueLines.Clear();
-                            dialogueLines.Enqueue("You input the number you found previously.");
-                            dialogueLines.Enqueue("The phone response `Lift the book again and knock twice.`");
+                            dialogueLines.Enqueue("You open the phone and dialed the hidden number from fishtank.");
+                            dialogueLines.Enqueue("You waited a while, and after some time passed there is faint sound.");
+                            dialogueLines.Enqueue("`Lift the book again and knock twice.`");
+                            dialogueLines.Enqueue("The sound then faded away after spouting the sentence, you wrote down the clue in a paper.");
                             StartCoroutine(DialogueRoutine(() => {
                                 var newItem = new Dictionary<string, object>
                                 {
@@ -377,7 +384,8 @@ public class GameUIManager : MonoBehaviour
                         else
                         {
                             dialogueLines.Clear();
-                            dialogueLines.Enqueue("The phone seems to be asking for a number...");
+                            dialogueLines.Enqueue("`You open the phone and dialed random number.`");
+                            dialogueLines.Enqueue("The phone is not responding and seems to be asking for specific number...");
                             StartCoroutine(DialogueRoutine(() => {
                                 HideDialog();
                             }));
@@ -390,9 +398,9 @@ public class GameUIManager : MonoBehaviour
                         if (hasBookKey != null)
                         {
                             dialogueLines.Clear();
-                            dialogueLines.Enqueue("You try to insert the key you found before.");
+                            dialogueLines.Enqueue("You try to insert unique book shaped key found earlier into the door keyhole.");
                             dialogueLines.Enqueue("You hear a click sound and the door is now unlocked!");
-                            dialogueLines.Enqueue("Congratulations! You've opened the door and escaped!");
+                            dialogueLines.Enqueue("Congratulations! You managed to escape the room!");
                             StartCoroutine(DialogueRoutine(() => {
                                 HideDialog();
                                 winPanel.SetActive(true);
@@ -401,7 +409,9 @@ public class GameUIManager : MonoBehaviour
                         else
                         {
                             dialogueLines.Clear();
-                            dialogueLines.Enqueue("The door is locked. You need a key to open it.");
+                            dialogueLines.Enqueue("You try to open the door but it is not budging, the door is locked.");
+                            dialogueLines.Enqueue("You inspect the oddly shaped keyhole and noticed the shape resemble book.");
+                            dialogueLines.Enqueue("Maybe there is a key hidden somewhere in the room with this particular shape");
                             StartCoroutine(DialogueRoutine(() => {
                                 HideDialog();
                             }));
@@ -413,18 +423,19 @@ public class GameUIManager : MonoBehaviour
                         if (globalLightObject.intensity == 0.07f)
                         {
                             dialogueLines.Clear();
-                            dialogueLines.Enqueue("There is a portrait picture.");
-                            dialogueLines.Enqueue("Suddenly you found a hidden switch.");
+                            dialogueLines.Enqueue("`You take down the portrait picture from the wall.`");
+                            dialogueLines.Enqueue("You inspect the back and to your surprise you found a hidden switch!.");
                             dialogueLines.Enqueue("You click the switch and the light in the room turn on.");
                             StartCoroutine(DialogueRoutine(() => {
-                                globalLightObject.intensity = 1f;
+                                globalLightObject.intensity = 0.5f;
                                 HideDialog();
                             }));
                         }
                         else
                         {
                             dialogueLines.Clear();
-                            dialogueLines.Enqueue("There is a portrait picture.");
+                            dialogueLines.Enqueue("There is a portrait picture on the wall.");
+                            dialogueLines.Enqueue("Inside of the display is a picture of woman with her dog.");
                             StartCoroutine(DialogueRoutine(() => {
                                 HideDialog();
                             }));
@@ -434,7 +445,8 @@ public class GameUIManager : MonoBehaviour
                 case "boxes":
                     {
                         dialogueLines.Clear();
-                        dialogueLines.Enqueue("There is a lot of box in here.");
+                        dialogueLines.Enqueue("There is a lot of boxes stacked in here.");
+                        dialogueLines.Enqueue("You wondered if there is someone moving here recently.");
                         StartCoroutine(DialogueRoutine(() => {
                             HideDialog();
                         }));
@@ -443,7 +455,8 @@ public class GameUIManager : MonoBehaviour
                 case "clock":
                     {
                         dialogueLines.Clear();
-                        dialogueLines.Enqueue("There is a clock on the wall.");
+                        dialogueLines.Enqueue("A clock is hanging on the wall.");
+                        dialogueLines.Enqueue("The clock is not functioning, the time stopped at 12.12.");
                         StartCoroutine(DialogueRoutine(() => {
                             HideDialog();
                         }));
@@ -465,7 +478,7 @@ public class GameUIManager : MonoBehaviour
                         {
                             ShowDialog();
                             dialogueLines.Clear();
-                            dialogueLines.Enqueue("You turn on the torch you have found before.");
+                            dialogueLines.Enqueue("You turn on the torch.");
                             StartCoroutine(DialogueRoutine(() =>
                             {
                                 playerLightObject.gameObject.SetActive(true);
@@ -488,7 +501,7 @@ public class GameUIManager : MonoBehaviour
                         {
                             ShowDialog();
                             dialogueLines.Clear();
-                            dialogueLines.Enqueue("This is a key you found from book.");
+                            dialogueLines.Enqueue("Odd book shaped key.");
                             StartCoroutine(DialogueRoutine(() =>
                             {
                                 HideDialog();
@@ -500,6 +513,7 @@ public class GameUIManager : MonoBehaviour
                             ShowDialog();
                             dialogueLines.Clear();
                             dialogueLines.Enqueue("This is clue you note from the book.");
+                            dialogueLines.Enqueue("inside written: `Light reveals the truth beneath the fish tank.`.");
                             StartCoroutine(DialogueRoutine(() =>
                             {
                                 HideDialog();
@@ -510,7 +524,7 @@ public class GameUIManager : MonoBehaviour
                         {
                             ShowDialog();
                             dialogueLines.Clear();
-                            dialogueLines.Enqueue("This is clue you note from the fish tank.");
+                            dialogueLines.Enqueue("Number clue from fish tank, where should i use this?.");
                             StartCoroutine(DialogueRoutine(() =>
                             {
                                 HideDialog();
@@ -521,7 +535,7 @@ public class GameUIManager : MonoBehaviour
                         {
                             ShowDialog();
                             dialogueLines.Clear();
-                            dialogueLines.Enqueue("This is clue you note from the phone.");
+                            dialogueLines.Enqueue("Your handwritten note from phone clue.");
                             StartCoroutine(DialogueRoutine(() =>
                             {
                                 HideDialog();
